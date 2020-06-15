@@ -18,6 +18,7 @@ services:
     volumes:
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - /etc/letsencrypt/live/bioreactor.hackuarium.org:/mosquitto/letsencrypt
     user: root
   influxdb:
     image: "influxdb:1.7.9"
