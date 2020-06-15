@@ -1,0 +1,6 @@
+node-red/data/.npm
+node-red/data/context
+node-red/data/lib
+node-red/data/node_modules
+node-red/data/*backup
+influxdb

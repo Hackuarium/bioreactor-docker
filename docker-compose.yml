@@ -1,0 +1,37 @@
+version: '3'
+services:
+  node-red:
+    build: node-red/.
+    restart: always
+    ports:
+      - '127.0.0.1:1880:1880'
+    volumes:
+      - ./node-red/data:/data
+    user: root
+  mosquitto:
+    image: 'eclipse-mosquitto'
+    restart: always
+    ports:
+      - 1883:1883
+    expose:
+      - 1883
+    volumes:
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log/mosquitto.log:/mosquitto/log/mosquitto.log
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    user: root
+  influxdb:
+    image: 'influxdb:1.7.9'
+    restart: always
+    expose:
+      - 8086
+    volumes:
+      - ./influxdb/db:/var/lib/influxdb
+    environment:
+      INFLUXDB_DB: data
+      INFLUXDB_HTTP_AUTH_ENABLED: 'true'
+      INFLUXDB_ADMIN_USER: admin
+      INFLUXDB_ADMIN_PASSWORD: admin
+      INFLUXDB_USER: user
+      INFLUXDB_USER_PASSWORD: user
+    user: root
