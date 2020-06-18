@@ -18,9 +18,9 @@
 // to make it available:
 //var fs = require("fs");
 
-(module.exports = {
+module.exports = {
   // the tcp port that the Node-RED web server is listening on
-  "uiPort": process.env.PORT || 1880,
+  uiPort: process.env.PORT || 1880,
 
   // By default, the Node-RED UI accepts connections on all IPv4 interfaces.
   // To listen on all IPv6 addresses, set uiHost to "::",
@@ -29,10 +29,10 @@
   //uiHost: "127.0.0.1",
 
   // Retry time in milliseconds for MQTT connections
-  "mqttReconnectTime": 15000,
+  mqttReconnectTime: 15000,
 
   // Retry time in milliseconds for Serial port connections
-  "serialReconnectTime": 15000,
+  serialReconnectTime: 15000,
 
   // Retry time in milliseconds for TCP socket connections
   //socketReconnectTime: 10000,
@@ -50,7 +50,7 @@
   //httpRequestTimeout: 120000,
 
   // The maximum length, in characters, of any message sent to the debug sidebar tab
-  "debugMaxLength": 1000,
+  debugMaxLength: 1000,
 
   // The maximum number of messages nodes will buffer internally as part of their
   // operation. This applies across a range of nodes that operate on message sequences.
@@ -77,7 +77,7 @@
   // Note: once you set this property, do not change it - doing so will prevent
   // node-red from being able to decrypt your existing credentials and they will be
   // lost.
-  "credentialSecret": false,
+  credentialSecret: false,
 
   // By default, all user data is stored in a directory called `.node-red` under
   // the user's home directory. To use a different location, the following
@@ -213,7 +213,8 @@
   //    functionGlobalContext: { os:require('os') }
   // can be accessed in a function block as:
   //    global.get("os")
-  "functionGlobalContext": {
+  functionGlobalContext: {
+    LegoinoUtil: require('legoino-util'),
     // os:require('os'),
     // jfive:require("johnny-five"),
     // j5board:require("johnny-five").Board({repl:false})
@@ -225,17 +226,17 @@
   // from being list by `global.keys()`.
   // By default, the property is set to false to avoid accidental exposure of
   // their values. Setting this to true will cause the keys to be listed.
-  "exportGlobalContextKeys": false,
+  exportGlobalContextKeys: false,
 
   // Context Storage
   // The following property can be used to enable context storage. The configuration
   // provided here will enable file-based context that flushes to disk every 30 seconds.
   // Refer to the documentation for further options: https://nodered.org/docs/api/context/
   //
-  "contextStorage": {
-    "default": "memoryOnly",
-    "memoryOnly": { "module": "memory" },
-    "file": { "module": "localfilesystem" }
+  contextStorage: {
+    default: 'memoryOnly',
+    memoryOnly: { module: 'memory' },
+    file: { module: 'localfilesystem' },
   },
 
   // The following property can be used to order the categories in the editor
@@ -245,9 +246,9 @@
   //paletteCategories: ['subflows', 'common', 'function', 'network', 'sequence', 'parser', 'storage'],
 
   // Configure the logging output
-  "logging": {
+  logging: {
     // Only console logging is currently supported
-    "console": {
+    console: {
       // Level of logging to be recorded. Options are:
       // fatal - only those errors which make the application unusable should be recorded
       // error - record errors which are deemed fatal for a particular request + fatal errors
@@ -256,19 +257,19 @@
       // debug - record information which is more verbose than info + info + warn + error + fatal errors
       // trace - record very detailed logging + debug + info + warn + error + fatal errors
       // off - turn off all logging (doesn't affect metrics or audit)
-      "level": "info",
+      level: 'info',
       // Whether or not to include metric events in the log output
-      "metrics": false,
+      metrics: false,
       // Whether or not to include audit events in the log output
-      "audit": false
-    }
+      audit: false,
+    },
   },
 
   // Customising the editor
-  "editorTheme": {
-    "projects": {
+  editorTheme: {
+    projects: {
       // To enable the Projects feature, set this value to true
-      "enabled": false
-    }
-  }
-})
+      enabled: false,
+    },
+  },
+};
