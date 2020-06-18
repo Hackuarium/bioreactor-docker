@@ -1,6 +1,5 @@
 FROM nodered/node-red:1.0.6-2
 RUN npm i legoino-util@1.1.3
-RUN npm i legoino-util@1.1.3
 RUN npm i node-red-contrib-influxdb@~0.4.0
 RUN npm i node-red-contrib-simple-gate@~0.3.1
 RUN npm i node-red-contrib-telegrambot@~8.1.0
