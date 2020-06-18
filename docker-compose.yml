@@ -18,7 +18,7 @@ services:
     volumes:
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - /etc/letsencrypt/live/bioreactor.hackuarium.org:/mosquitto/letsencrypt
+    #      - /etc/letsencrypt/live/bioreactor.hackuarium.org:/mosquitto/letsencrypt
     user: root
   influxdb:
     image: "influxdb:1.7.9"
@@ -29,9 +29,5 @@ services:
       - ./influxdb/db:/var/lib/influxdb
     environment:
       INFLUXDB_DB: data
-      INFLUXDB_HTTP_AUTH_ENABLED: "true"
-      INFLUXDB_ADMIN_USER: admin
-      INFLUXDB_ADMIN_PASSWORD: admin
-      INFLUXDB_USER: user
-      INFLUXDB_USER_PASSWORD: user
+      INFLUXDB_HTTP_AUTH_ENABLED: "false"
     user: root
