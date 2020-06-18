@@ -1,93 +1,93 @@
-## mqtt
+# bioreactor-docker
 
-The goal of this project is to create a fast setup of a docker mqtt broker in javascript.
-
-In this project we are using 4 diffent docker images:
-* node-red
-* mosca
-* mongo
-* influxdb
-
-## setup a new server
-
-This documentation is for a CentOS 7.x
+This project is the dockerization of [Hackuarium/nodered-bioreactor-gui](https://github.com/Hackuarium/nodered-bioreactor-gui).
 
 ### Install docker
 
-curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-
-### Install iptables
-
-Add the following rule in iptables:
-`-A INPUT -p tcp -m tcp -m multiport --dports http,https,1883 -j ACCEPT`
-
-### Using an apache proxy
-
-Using an apache proxy allows to play with the hostname.
-
-vi /etc/httpd/conf.d/mqtt.conf
-```
-<VirtualHost *:80>
-    ServerName 	mqtt.beemos.org
-
-	ProxyRequests off
-	ProxyPreserveHost on
-	ProxyPass               "/comms"        "ws://localhost:1880/comms"
-	ProxyPassReverse        "/comms"        "ws://localhost:1880/comms"
-	ProxyPass               "/"             "http://localhost:1880/"
-	ProxyPassReverse        "/"             "http://localhost:1880/"
-</VirtualHost>  
+```bash
+curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-\$(uname -m) -o /usr/local/bin/docker-compose
 ```
 
-### Starting the server
+## Starting the project
 
-`docker-compose up -d`
+Once you cloned the project, you can simply go to the folder and run:
 
-## Testing
+```bash
+docker-compose up
+```
 
+## Stopping the project
 
+You might want to do this if you pull some changes from the cloud, then start again.
 
-## Some other tools
+```bash
+docker-compose down
+```
 
+## Docker images
 
-Node-red will save all the data in the folder `node-red/data`
+We had to install three different docker images in the project:
 
-Using GRAFANA for output: https://www.hackster.io/naresh-krish/visualizing-lora-node-data-with-node-red-and-grafana-8960d3
+- Node-red
+- Mosquitto
+- InfluxDB
 
-http://localhost:1880/
+The images are installed (or built) thanks to the configuration in the `docker-compose.yml` file. The images were found on [Docker Hub](https://hub.docker.com/).
 
-The UI
+### Node-Red
 
-http://localhost:1880/ui/
+Source image: `nodered/node-red`
 
-mosquitto_pub --retain -t "random" -m $RANDOM
+The node-red image has to be built because we add some packages to it (all the dependencies of the `nodered-bioreactor-gui). All the packages are added in the file`node-red/Dockerfile`.
 
-Add continously data:
-`while true; do mosquitto_pub --retain -t "random" -m $RANDOM; sleep 2; done`
+### Mosquitto
 
-## Mosquitto
+Source image: `eclipse-mosquitto`
 
-Test MQTT server using mosquitto
+### InfluxDB
 
-mosquitto_pub --retain -m "Test" -t "abcd/efgh"
+Source image: `influxdb`
 
-mosquitto_sub -h "localhost" -t "abcd/efgh"
+The node-red graphical interface of the bioreactor requires some influxDB databases to be already existing. We create these databases, as well as the continuous queries in the file `influxdb/init/startup.iql`.
 
+The data of the database is in `influxdb/db/`.
 
-## Connect to influxdb for debug
+Connect to influxdb for debug:
 
-`docker-compose exec influxdb bash`
-`influx -username user -password user`
+```bash
+docker-compose exec influxdb bash
+```
 
-`show databases`
-`use data`
-`select * from random`
+## Deployment machine
 
+## Docker folder
 
-## Problems with Fedora 31
+Docker is in `/usr/local/docker`. This is where the project is cloned.
 
-https://github.com/docker/for-linux/issues/219
+## Proxy
 
-$ sudo dnf install -y grubby
-$ sudo grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=0"
-$ sudo reboot
+**Apache** was used.
+
+There is only one port accessible from the internet: HTTPS - port 443. Many services, which work on various ports, run behind this one entry point. This is why you have to configure a proxy, which will redirect queries to the correct services. In our case, we want to redirect [https://bioreactor.hackuarium.org]() to [http://localhost:1880]().
+
+The proxy config file is: `etc/httpd/conf.d`.
+
+The code underneath is what should be used as the configuration of port 443:
+
+```
+<VirtualHost *:443>
+	Use SSLConf bioreactor.hackuarium.org
+
+    ServerName bioreactor.hackuarium.org
+
+	ProxyRequests Off
+    ProxyPreserveHost On
+
+	RewriteEngine On
+	RewriteCond %{HTTP:Upgrade} websocket [NC]
+	RewriteRule /(.*) ws://localhost:1880/$1 [P,L]
+
+    ProxyPass       	/	http://localhost:1880/
+    ProxyPassReverse 	/ 	http://localhost:1880/
+</VirtualHost>
+```
