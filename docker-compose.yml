@@ -27,6 +27,7 @@ services:
       - 8086
     volumes:
       - ./influxdb/db:/var/lib/influxdb
+      - ./influxdb/init:/docker-entrypoint-initdb.d # startup scripts
     environment:
       INFLUXDB_DB: data
       INFLUXDB_HTTP_AUTH_ENABLED: "false"
